@@ -1,0 +1,901 @@
+preciso fazer alterações neste código e quero que me ajude:
+
+<!DOCTYPE html>
+
+<html lang="pt">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cardápio Digital & Delivery</title>
+
+    <!-- Tailwind CSS para estilização rápida e responsiva -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-gray-100 text-gray-800 font-sans pb-28">
+
+
+
+    <!-- CABEÇALHO / VITRINE DO CLIENTE -->
+
+    <header id="mainHeader" class="text-white p-6 shadow-lg transition-colors duration-300" style="background-color: #ea580c;">
+
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+
+            <div class="flex items-center gap-4">
+
+                <img id="headerLogo" src="https://via.placeholder.com/80" alt="Logo" class="w-20 h-20 object-cover rounded-full border-4 border-white shadow-md">
+
+                <div>
+
+                    <h1 id="headerStoreName" class="text-3xl font-bold">Meu Negócio</h1>
+
+                    <p id="headerStoreAddress" class="text-sm opacity-90 mt-1">Endereço do Estabelecimento</p>
+
+                </div>
+
+            </div>
+
+            <div class="flex flex-col items-end gap-2">
+
+                <span id="headerPhone" class="text-sm bg-black/20 px-3 py-1.5 rounded-lg font-medium">WhatsApp: (00) 00000-0000</span>
+
+                <!-- Botão de acesso ao painel do comerciante -->
+
+                <button onclick="toggleAdminPanel()" id="btnToggleMode" class="text-xs bg-white text-gray-800 px-3 py-1.5 rounded font-semibold shadow hover:bg-gray-100 transition-colors">
+
+                    ⚙️ Abrir Painel do Comerciante
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <main class="max-w-4xl mx-auto p-4 mt-6">
+
+
+
+        <!-- PAINEL DO COMERCIANTE: Nativamente oculto -->
+
+        <section id="adminSection" style="display: none;" class="bg-white p-6 rounded-xl shadow-md mb-8 border border-gray-200">
+
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+
+                <h2 class="text-xl font-bold text-gray-800">⚙️ Painel de Gestão do Comerciante</h2>
+
+                <span class="text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-semibold">Modo Administrador</span>
+
+            </div>
+
+            
+
+            <!-- Configurações do Estabelecimento -->
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border">
+
+                <div>
+
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Nome do Negócio</label>
+
+                    <input type="text" id="storeName" placeholder="Ex: Sabor & Arte" class="w-full p-2 border rounded bg-white text-sm" oninput="updateStoreInfo()">
+
+                </div>
+
+                <div>
+
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">WhatsApp (com DDD)</label>
+
+                    <input type="text" id="storePhone" placeholder="Ex: 5531999999999" class="w-full p-2 border rounded bg-white text-sm" oninput="updateStoreInfo()">
+
+                </div>
+
+                <div>
+
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Endereço Completo</label>
+
+                    <input type="text" id="storeAddress" placeholder="Rua Exemplo, 123 - Betim" class="w-full p-2 border rounded bg-white text-sm" oninput="updateStoreInfo()">
+
+                </div>
+
+                <div>
+
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Cor do Tema</label>
+
+                    <div class="flex items-center gap-2">
+
+                        <input type="color" id="storeColor" value="#ea580c" class="w-10 h-10 rounded border cursor-pointer" onchange="updateStoreInfo()">
+
+                        <span class="text-xs text-gray-500">Cor principal</span>
+
+                    </div>
+
+                </div>
+
+                <div class="md:col-span-4">
+
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Logótipo do Estabelecimento</label>
+
+                    <input type="file" id="storeLogoFile" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100" onchange="loadLogoFile(event)">
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Gestão de Categorias -->
+
+            <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
+
+                <h3 class="text-md font-bold text-blue-900 mb-2">📁 Gerir Categorias</h3>
+
+                <div class="flex gap-2">
+
+                    <input type="text" id="newCategoryName" placeholder="Nome da Categoria (Ex: Lanches)" class="flex-1 p-2 border rounded text-sm bg-white">
+
+                    <button onclick="addCategory()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-blue-700">Adicionar</button>
+
+                </div>
+
+                <div id="categoryListTags" class="flex flex-wrap gap-2 mt-3"></div>
+
+            </div>
+
+
+
+            <!-- Cadastro de Produtos -->
+
+            <div class="bg-gray-50 p-4 rounded-lg border">
+
+                <h3 class="text-md font-bold text-gray-800 mb-3">🍔 Adicionar Produto</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+
+                    <input type="text" id="prodName" placeholder="Nome do Produto" class="p-2 border rounded bg-white text-sm">
+
+                    <select id="prodCategorySelect" class="p-2 border rounded bg-white text-sm">
+
+                        <option value="">Selecione a Categoria</option>
+
+                    </select>
+
+                    <input type="number" id="prodPrice" placeholder="Preço (R$)" step="0.01" class="p-2 border rounded bg-white text-sm">
+
+                    <input type="file" id="prodImageFile" accept="image/*" class="text-xs text-gray-500 file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-200">
+
+                </div>
+
+                <button onclick="addProduct()" id="btnAddProduct" class="w-full text-white p-2.5 rounded font-bold text-sm shadow transition-colors" style="background-color: #ea580c;">Cadastrar Produto</button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- CARDÁPIO / VITRINE DO CLIENTE -->
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+
+            <h2 class="text-xl font-bold text-gray-800 border-b pb-3 mb-4">📖 Cardápio Disponível</h2>
+
+            <div id="catalogList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <p class="text-gray-500 italic">Nenhum produto cadastrado ainda.</p>
+
+            </div>
+
+        </section>
+
+
+
+    </main>
+
+
+
+    <!-- BARRA FLUTUANTE DO CARRINHO (Visível apenas para clientes, nunca no painel admin) -->
+
+    <div id="cartBar" class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl p-4 hidden transition-all duration-300 z-50">
+
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+
+            <div>
+
+                <span class="font-bold text-gray-800 text-lg">🛒 Carrinho: <span id="cartCount">0</span> itens</span>
+
+                <span class="text-gray-600 text-sm ml-4">Total: <strong class="text-green-600 text-lg" id="cartTotal">R$ 0,00</strong></span>
+
+            </div>
+
+            <div class="flex items-center gap-3 w-full md:w-auto">
+
+                <select id="paymentMethod" class="p-2 border rounded bg-gray-50 text-sm font-medium">
+
+                    <option value="PIX">💳 PIX</option>
+
+                    <option value="Dinheiro">💵 Dinheiro (com troco)</option>
+
+                    <option value="Cartão de Crédito/Débito">📱 Cartão na Entrega</option>
+
+                </select>
+
+                <button onclick="openCartModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-bold text-sm shadow transition-colors">
+
+                    Ver Carrinho
+
+                </button>
+
+                <button onclick="checkoutWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow transition-colors">
+
+                    Enviar Pedido WhatsApp
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MODAL DO CARRINHO -->
+
+    <div id="cartModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl">
+
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+
+                <h3 class="text-lg font-bold text-gray-800">🛒 Itens no seu Carrinho</h3>
+
+                <button onclick="closeCartModal()" class="text-gray-500 hover:text-gray-800 text-xl font-bold">×</button>
+
+            </div>
+
+            <div id="cartModalItems" class="max-h-60 overflow-y-auto divide-y mb-4"></div>
+
+            <div class="flex justify-between items-center font-bold text-lg border-t pt-3 mb-6">
+
+                <span>Total a Pagar:</span>
+
+                <span id="modalTotal" class="text-green-600">R$ 0,00</span>
+
+            </div>
+
+            <button onclick="closeCartModal()" class="w-full bg-gray-200 text-gray-800 py-2 rounded font-semibold hover:bg-gray-300">Continuar Comprando</button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SCRIPT DE CONTROLO -->
+
+    <script>
+
+        // Dados padrão iniciais (Garante que a aba anónima e o telemóvel já abrem com um catálogo preenchido)
+
+        let defaultStore = {
+
+            name: "Lanches da Tina",
+
+            phone: "5531999999999",
+
+            address: "Rua Coronel Pereira Filho, 1343 - São Cristovão, Betim - MG",
+
+            color: "#16a34a", // Verde elegante por defeito
+
+            logo: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=150"
+
+        };
+
+
+
+        let defaultCategories = ["Bebidas", "Açaí"];
+
+        
+
+        let defaultProducts = [
+
+            { name: "Coca Cola 350ml", category: "Bebidas", price: "5.99", image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=150" },
+
+            { name: "Fanta Laranja 350ml", category: "Bebidas", price: "5.99", image: "https://images.unsplash.com/photo-1624552184280-9e9632bbeee9?w=150" },
+
+            { name: "Açaí 300ml", category: "Açaí", price: "14.99", image: "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=150" },
+
+            { name: "Açaí 500ml", category: "Açaí", price: "19.99", image: "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=150" }
+
+        ];
+
+
+
+        let storeData = {};
+
+        let categories = [];
+
+        let products = [];
+
+        let cart = [];
+
+        let isAdminVisible = false;
+
+
+
+        window.onload = function() {
+
+            const savedStore = localStorage.getItem('storeData');
+
+            const savedCats = localStorage.getItem('categories');
+
+            const savedProducts = localStorage.getItem('products');
+
+
+
+            // Se não houver dados salvos (como na aba anónima ou telemóvel novo), usa os padrões criados
+
+            storeData = savedStore ? JSON.parse(savedStore) : defaultStore;
+
+            categories = savedCats ? JSON.parse(savedCats) : defaultCategories;
+
+            products = savedProducts ? JSON.parse(savedProducts) : defaultProducts;
+
+
+
+            document.getElementById('storeName').value = storeData.name;
+
+            document.getElementById('storePhone').value = storeData.phone;
+
+            document.getElementById('storeAddress').value = storeData.address;
+
+            document.getElementById('storeColor').value = storeData.color;
+
+
+
+            isAdminVisible = false;
+
+            document.getElementById('adminSection').style.display = 'none';
+
+            document.getElementById('btnToggleMode').innerText = "⚙️ Abrir Painel do Comerciante";
+
+
+
+            applyStoreTheme();
+
+            renderCategories();
+
+            renderCategorySelect();
+
+            renderCatalog();
+
+            updateCartUI();
+
+        };
+
+
+
+        function toggleAdminPanel() {
+
+            isAdminVisible = !isAdminVisible;
+
+            const adminSection = document.getElementById('adminSection');
+
+            const btnToggle = document.getElementById('btnToggleMode');
+
+            
+
+            if (isAdminVisible) {
+
+                adminSection.style.display = 'block';
+
+                btnToggle.innerText = "👁️ Ocultar Painel do Comerciante";
+
+            } else {
+
+                adminSection.style.display = 'none';
+
+                btnToggle.innerText = "⚙️ Abrir Painel do Comerciante";
+
+            }
+
+            renderCatalog();
+
+            updateCartUI(); // Esconde o carrinho se entrar no modo admin
+
+        }
+
+
+
+        function updateStoreInfo() {
+
+            storeData.name = document.getElementById('storeName').value || "Meu Negócio";
+
+            storeData.phone = document.getElementById('storePhone').value || "5531999999999";
+
+            storeData.address = document.getElementById('storeAddress').value || "Betim - MG";
+
+            storeData.color = document.getElementById('storeColor').value || "#ea580c";
+
+            
+
+            applyStoreTheme();
+
+            saveData();
+
+        }
+
+
+
+        function applyStoreTheme() {
+
+            document.getElementById('mainHeader').style.backgroundColor = storeData.color;
+
+            document.getElementById('btnAddProduct').style.backgroundColor = storeData.color;
+
+            document.getElementById('headerStoreName').innerText = storeData.name;
+
+            document.getElementById('headerStoreAddress').innerText = storeData.address;
+
+            document.getElementById('headerPhone').innerText = "WhatsApp: " + storeData.phone;
+
+            if (storeData.logo) {
+
+                document.getElementById('headerLogo').src = storeData.logo;
+
+            }
+
+        }
+
+
+
+        function loadLogoFile(event) {
+
+            const file = event.target.files[0];
+
+            if (file) {
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+
+                    storeData.logo = e.target.result;
+
+                    applyStoreTheme();
+
+                    saveData();
+
+                };
+
+                reader.readAsDataURL(file);
+
+            }
+
+        }
+
+
+
+        function addCategory() {
+
+            const catInput = document.getElementById('newCategoryName');
+
+            const catName = catInput.value.trim();
+
+            if (!catName) { alert('Digite o nome da categoria.'); return; }
+
+            if (!categories.includes(catName)) {
+
+                categories.push(catName);
+
+                catInput.value = '';
+
+                saveData();
+
+                renderCategories();
+
+                renderCategorySelect();
+
+            } else {
+
+                alert('Esta categoria já existe.');
+
+            }
+
+        }
+
+
+
+        function removeCategory(index) {
+
+            categories.splice(index, 1);
+
+            saveData();
+
+            renderCategories();
+
+            renderCategorySelect();
+
+        }
+
+
+
+        function renderCategories() {
+
+            const container = document.getElementById('categoryListTags');
+
+            let html = '';
+
+            categories.forEach((cat, index) => {
+
+                html += `
+
+                    <span class="bg-white border border-blue-200 text-blue-800 text-xs px-3 py-1 rounded-full flex items-center gap-2 shadow-sm font-medium">
+
+                        ${cat}
+
+                        <button onclick="removeCategory(${index})" class="text-red-500 font-bold">×</button>
+
+                    </span>
+
+                `;
+
+            });
+
+            container.innerHTML = html;
+
+        }
+
+
+
+        function renderCategorySelect() {
+
+            const select = document.getElementById('prodCategorySelect');
+
+            let html = '<option value="">Selecione a Categoria</option>';
+
+            categories.forEach(cat => { html += `<option value="${cat}">${cat}</option>`; });
+
+            select.innerHTML = html;
+
+        }
+
+
+
+        function addProduct() {
+
+            const name = document.getElementById('prodName').value;
+
+            const category = document.getElementById('prodCategorySelect').value;
+
+            const price = document.getElementById('prodPrice').value;
+
+            const fileInput = document.getElementById('prodImageFile');
+
+
+
+            if (!name || !price || !category) {
+
+                alert('Preencha o nome, selecione a categoria e informe o preço.');
+
+                return;
+
+            }
+
+
+
+            if (fileInput.files && fileInput.files[0]) {
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) { saveProductFinal(name, category, price, e.target.result); };
+
+                reader.readAsDataURL(fileInput.files[0]);
+
+            } else {
+
+                saveProductFinal(name, category, price, 'https://via.placeholder.com/150');
+
+            }
+
+        }
+
+
+
+        function saveProductFinal(name, category, price, imageUrl) {
+
+            products.push({ name, category, price: parseFloat(price).toFixed(2), image: imageUrl });
+
+            document.getElementById('prodName').value = '';
+
+            document.getElementById('prodPrice').value = '';
+
+            document.getElementById('prodImageFile').value = '';
+
+            document.getElementById('prodCategorySelect').value = '';
+
+            saveData();
+
+            renderCatalog();
+
+        }
+
+
+
+        function removeProduct(index) {
+
+            products.splice(index, 1);
+
+            saveData();
+
+            renderCatalog();
+
+        }
+
+
+
+        function addToCart(index) {
+
+            cart.push(products[index]);
+
+            updateCartUI();
+
+        }
+
+
+
+        function removeFromCart(cartIndex) {
+
+            cart.splice(cartIndex, 1);
+
+            updateCartUI();
+
+            renderCartModalItems();
+
+        }
+
+
+
+        function updateCartUI() {
+
+            const cartBar = document.getElementById('cartBar');
+
+            const cartCount = document.getElementById('cartCount');
+
+            const cartTotal = document.getElementById('cartTotal');
+
+
+
+            cartCount.innerText = cart.length;
+
+
+
+            let total = 0;
+
+            cart.forEach(item => { total += parseFloat(item.price); });
+
+            cartTotal.innerText = `R$ ${total.toFixed(2)}`;
+
+
+
+            // Se o painel admin estiver aberto, o carrinho NUNCA aparece
+
+            if (cart.length > 0 && !isAdminVisible) {
+
+                cartBar.classList.remove('hidden');
+
+            } else {
+
+                cartBar.classList.add('hidden');
+
+                if (cart.length === 0) closeCartModal();
+
+            }
+
+        }
+
+
+
+        function openCartModal() {
+
+            renderCartModalItems();
+
+            document.getElementById('cartModal').classList.remove('hidden');
+
+        }
+
+
+
+        function closeCartModal() {
+
+            document.getElementById('cartModal').classList.add('hidden');
+
+        }
+
+
+
+        function renderCartModalItems() {
+
+            const container = document.getElementById('cartModalItems');
+
+            const modalTotal = document.getElementById('modalTotal');
+
+            
+
+            if (cart.length === 0) {
+
+                container.innerHTML = '<p class="text-gray-500 italic py-4 text-center">O carrinho está vazio.</p>';
+
+                modalTotal.innerText = 'R$ 0,00';
+
+                return;
+
+            }
+
+
+
+            let html = '';
+
+            let total = 0;
+
+            cart.forEach((item, index) => {
+
+                total += parseFloat(item.price);
+
+                html += `
+
+                    <div class="py-3 flex justify-between items-center">
+
+                        <div>
+
+                            <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
+
+                            <span class="text-green-600 font-semibold text-xs">R$ ${item.price}</span>
+
+                        </div>
+
+                        <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 text-xs bg-red-50 px-2.5 py-1 rounded font-medium">Remover</button>
+
+                    </div>
+
+                `;
+
+            });
+
+            container.innerHTML = html;
+
+            modalTotal.innerText = `R$ ${total.toFixed(2)}`;
+
+        }
+
+
+
+        function checkoutWhatsApp() {
+
+            if (cart.length === 0) return;
+
+
+
+            const phone = storeData.phone.replace(/\D/g, '');
+
+            const payment = document.getElementById('paymentMethod').value;
+
+            
+
+            let message = `*Olá! Gostaria de fazer o seguinte pedido:*\n\n`;
+
+            let total = 0;
+
+
+
+            cart.forEach((item, idx) => {
+
+                message += `${idx + 1}. ${item.name} - R$ ${item.price}\n`;
+
+                total += parseFloat(item.price);
+
+            });
+
+
+
+            message += `\n*Total dos Produtos:* R$ ${total.toFixed(2)}`;
+
+            message += `\n*Forma de Pagamento:* ${payment}`;
+
+            message += `\n\nPor favor, confirmam o pedido e o tempo de entrega?`;
+
+
+
+            const encodedMessage = encodeURIComponent(message);
+
+            window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+
+        }
+
+
+
+        function saveData() {
+
+            localStorage.setItem('storeData', JSON.stringify(storeData));
+
+            localStorage.setItem('categories', JSON.stringify(categories));
+
+            localStorage.setItem('products', JSON.stringify(products));
+
+        }
+
+
+
+        function renderCatalog() {
+
+            const catalogList = document.getElementById('catalogList');
+
+            if (products.length === 0) {
+
+                catalogList.innerHTML = '<p class="text-gray-500 italic">Nenhum produto cadastrado ainda.</p>';
+
+                return;
+
+            }
+
+
+
+            let html = '';
+
+            products.forEach((prod, index) => {
+
+                html += `
+
+                    <div class="flex border rounded-lg overflow-hidden shadow-sm bg-white p-3 gap-4 items-center border-gray-200">
+
+                        <img src="${prod.image}" alt="${prod.name}" class="w-20 h-20 object-cover rounded-md border flex-shrink-0">
+
+                        <div class="flex-1">
+
+                            <span class="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full font-semibold">${prod.category}</span>
+
+                            <h4 class="font-bold text-lg mt-1 text-gray-800">${prod.name}</h4>
+
+                            <p class="text-green-600 font-semibold">R$ ${prod.price}</p>
+
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+
+                            <!-- O botão de adicionar ao carrinho SÓ APARECE se NÃO estivermos no painel de administração -->
+
+                            ${!isAdminVisible ? `<button onclick="addToCart(${index})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded font-bold shadow">🛒 Adicionar</button>` : ''}
+
+                            
+
+                            <!-- O botão de excluir só aparece SE estivermos no painel do administrador -->
+
+                            ${isAdminVisible ? `<button onclick="removeProduct(${index})" class="text-red-500 text-xs px-2 py-1 bg-red-50 rounded">Excluir</button>` : ''}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+            catalogList.innerHTML = html;
+
+        }
+
+    </script>
+
+</body>
+
+</html>

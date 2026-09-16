@@ -1,0 +1,84 @@
+import {
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createS3Client, getBucketConfig } from "./aws-config";
+
+function shouldServeInline(contentType: string): boolean {
+  return (
+    (contentType.startsWith("image/") && contentType !== "image/svg+xml") ||
+    contentType.startsWith("video/") ||
+    contentType.startsWith("audio/")
+  );
+}
+
+export async function generatePresignedUploadUrl(
+  fileName: string,
+  contentType: string,
+  isPublic: boolean = true
+): Promise<{ uploadUrl: string; cloud_storage_path: string; publicUrl: string }> {
+  const { bucketName, folderPrefix } = getBucketConfig();
+  const s3 = createS3Client();
+
+  const cloud_storage_path = isPublic
+    ? `${folderPrefix}public/uploads/${Date.now()}-${fileName}`
+    : `${folderPrefix}uploads/${Date.now()}-${fileName}`;
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: cloud_storage_path,
+  });
+
+  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+  const region = await s3.config.region();
+  const publicUrl = isPublic
+    ? `https://${bucketName}.s3.${region}.amazonaws.com/${cloud_storage_path
+        .split("/")
+        .map(encodeURIComponent)
+        .join("/")}`
+    : "";
+
+  return { uploadUrl, cloud_storage_path, publicUrl };
+}
+
+export async function getFileUrl(
+  cloud_storage_path: string,
+  contentType: string,
+  isPublic: boolean
+): Promise<string> {
+  const { bucketName } = getBucketConfig();
+  const s3 = createS3Client();
+
+  if (isPublic) {
+    const region = await s3.config.region();
+    return `https://${bucketName}.s3.${region}.amazonaws.com/${cloud_storage_path
+      .split("/")
+      .map(encodeURIComponent)
+      .join("/")}`;
+  }
+
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: cloud_storage_path,
+    ResponseContentDisposition: shouldServeInline(contentType)
+      ? "inline"
+      : "attachment",
+  });
+
+  return getSignedUrl(s3, command, { expiresIn: 3600 });
+}
+
+export async function deleteFile(cloud_storage_path: string): Promise<void> {
+  const { bucketName } = getBucketConfig();
+  const s3 = createS3Client();
+
+  await s3.send(
+    new DeleteObjectCommand({
+      Bucket: bucketName,
+      Key: cloud_storage_path,
+    })
+  );
+}
